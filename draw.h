@@ -15,6 +15,7 @@ typedef struct {
 	point_t const * points;
 } shapedef_t;
 
+cairo_t* create_cr();
 void draw_shape(cairo_t *cr, shapedef_t shape);
 
 #endif

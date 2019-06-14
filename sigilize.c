@@ -27,6 +27,8 @@
 
 #include "sigilize_config.h"
 #include "sigilize.h"
+#include "process_intent.h"
+#include "draw.h"
 
 static struct option longopts[] = {
 	{ "help", no_argument, NULL, 'h' },
@@ -38,7 +40,6 @@ static struct option longopts[] = {
 typedef struct {
 	char const * fn_out;
 	char * intent;
-	int fout;
 	void * sigil_data;
 } params_t;
 
@@ -60,11 +61,12 @@ void usage() {
 	fprintf(stderr, "Options:\n");
 	fprintf(stderr, "\t-h, --help\tprint this help and exit\n");
 	fprintf(stderr, "\t-v, --version\tprint program version and exit\n");
-	fprintf(stderr, "\t-o, --output <file>\twrite to file instead of stdout\n");
+	fprintf(stderr, "\t-o, --output <file>\twrite to file instead of stdout. Defaults to sigil.png\n");
 }
 
 params_t parse_args(int argc, char * const * argv) {
 	params_t params;
+	params.fn_out = "sigil.png";
 	char ch;
 	while((ch = getopt_long(argc, argv, "hvo:", longopts, NULL)) != -1) {
 		switch(ch) {
@@ -75,7 +77,6 @@ params_t parse_args(int argc, char * const * argv) {
 				version();
 				exit(0);
 			case 'o':
-				params.fout = -1;
 				params.fn_out = argv[optind];
 				break;
 			default:
@@ -95,7 +96,8 @@ params_t parse_args(int argc, char * const * argv) {
 }
 
 params_t encode_intent(params_t params) {
-	params.sigil_data = (void*)params.intent;
+	sigil_t sigil = process_intent(params.intent);
+	params.sigil_data = (void*)(&sigil);
 	return params;
 }
 
@@ -103,7 +105,13 @@ void write_sigil(params_t params) {
 	if(params.sigil_data == NULL) {
 		error_exit(EINVAL, "Sigil data is null\n\n");
 	}
-	printf("%s\n", (char*)params.sigil_data);
+	sigil_t* sigil = (sigil_t*)params.sigil_data;
+	cairo_t* cr = create_cr();
+	int i;
+	for(i=0; i<sigil->nshapes; i++) {
+		draw_shape(cr, sigil->shapes[i]);
+	}
+	cairo_surface_write_to_png(cairo_get_target(cr), params.fn_out);
 }
 
 int main(int argc, char **argv) {

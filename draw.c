@@ -8,6 +8,21 @@
 #define CIRCLE_RADIUS 10
 #define LINE_WIDTH 1
 
+#define IMAGE_WIDTH 300
+#define IMAGE_HEIGHT 300
+
+cairo_t* create_cr()  {
+	cairo_surface_t* surface;
+	cairo_t* cr;
+
+	surface = cairo_image_surface_create(CAIRO_FORMAT_RGB24, IMAGE_WIDTH, IMAGE_HEIGHT);
+	cr = cairo_create(surface);
+	// this only decreases the refcount, which was increased by cairo_create
+	cairo_surface_destroy(surface);
+
+	return cr;
+}
+
 void init_line(cairo_t *cr, hsv_t hsv) {
 	cairo_set_line_width(cr, LINE_WIDTH);
 	rgb_t rgb = hsv2rgb(hsv);
