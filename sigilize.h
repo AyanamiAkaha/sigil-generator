@@ -19,9 +19,9 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#define error_exit(code, ...) ;{\
+#define error_exit(code, ...) {\
 	fprintf(stderr, "\nError at %s, %d: ", __FILE__, __LINE__);\
 	fprintf(stderr, __VA_ARGS__);\
 	usage();\
 	exit(code);\
-};
+}

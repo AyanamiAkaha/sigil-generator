@@ -26,7 +26,7 @@
 #include <string.h>
 
 #include "sigilize_config.h"
-#include "util_macros.h"
+#include "sigilize.h"
 
 static struct option longopts[] = {
 	{ "help", no_argument, NULL, 'h' },
