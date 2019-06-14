@@ -4,6 +4,9 @@
 #include <cairo/cairo.h>
 #include "colors.h"
 
+#define IMAGE_WIDTH 300
+#define IMAGE_HEIGHT 300
+
 typedef struct {
 	float x;
 	float y;
@@ -12,7 +15,7 @@ typedef struct {
 typedef struct {
 	hsv_t color;
 	unsigned char numpoints;
-	point_t const * points;
+	point_t * points;
 } shapedef_t;
 
 cairo_t* create_cr();

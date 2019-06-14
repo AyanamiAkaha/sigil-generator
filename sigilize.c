@@ -96,8 +96,9 @@ params_t parse_args(int argc, char * const * argv) {
 }
 
 params_t encode_intent(params_t params) {
-	sigil_t sigil = process_intent(params.intent);
-	params.sigil_data = (void*)(&sigil);
+	sigil_t* sigil = malloc(sizeof(sigil_t));
+	*sigil = process_intent(params.intent);
+	params.sigil_data = (void*)sigil;
 	return params;
 }
 

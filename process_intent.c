@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "process_intent.h"
+#include "draw.h"
 
 #define SATURATION 0.7
 #define VALUE 0.7
@@ -34,10 +35,21 @@ hsv_t get_color(bitbuffer_t* bitbuffer) {
 }
 
 unsigned char numpoints(bitbuffer_t* bitbuffer) {
-	unsigned char n = bitbuffer->bits & 0xf;
+	unsigned char n = (bitbuffer->bits & 0xf) + 1;
 	bitbuffer->nbits -= 4;
 	bitbuffer->bits >>= 4;
 	return n;
+}
+
+point_t get_point(context_t* ctx) {
+	point_t p;
+	p.x = (ctx->bitbuffer.bits & 0xf) * (float)IMAGE_WIDTH / 16;
+	ctx->bitbuffer.bits >>= 4;
+	ctx->bitbuffer.nbits -= 4;
+	p.y = (ctx->bitbuffer.bits & 0xf) * (float)IMAGE_HEIGHT / 16;
+	ctx->bitbuffer.bits >>= 4;
+	ctx->bitbuffer.nbits -= 4;
+	return p;
 }
 
 void parse_step(context_t* ctx, shapedef_t* shape) {
@@ -54,34 +66,34 @@ void parse_step(context_t* ctx, shapedef_t* shape) {
 			ctx->state = points;
 			break;
 		case points:
-			// TODO
+			shape->points[ctx->current_point] = get_point(ctx);
+			ctx->current_point++;
 			break;
 	}
 }
 
 sigil_t process_intent(char const * intent) {
 	int len = strlen(intent);
-	bitbuffer_t bitbuffer;
 	int idx;
-
-	bitbuffer.bits = *intent;
-	bitbuffer.nbits = 8;
 
 	context_t ctx;
 	sigil_t sigil;
+
+	ctx.bitbuffer.bits = *intent;
+	ctx.bitbuffer.nbits = 8;
+
 	// just allocate for worst-case scenario of having all single points
 	sigil.shapes = malloc((len/4+1) * sizeof(shapedef_t));
 	sigil.nshapes = 0;
 	for(idx=1;; idx++) {
 		int i = idx % len;
-		if(bitbuffer.bits <= 8) {
-			bitbuffer.bits |= (intent[i] << bitbuffer.bits);
-			bitbuffer.bits += 8;
+		if(ctx.bitbuffer.nbits <= 8) {
+			ctx.bitbuffer.bits |= (intent[i] << ctx.bitbuffer.bits);
+			ctx.bitbuffer.nbits += 8;
 		}
 		parse_step(&ctx, sigil.shapes+sigil.nshapes);
-		sigil.nshapes++;
-
-		if(ctx.state == points && ctx.npoints == ctx.npoints) {
+		if(ctx.state == points && ctx.current_point == ctx.npoints) {
+			sigil.nshapes++;
 			ctx.state = color;
 			// if we wrapped around we have all shapes we want
 			if(idx > i) break;

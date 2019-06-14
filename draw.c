@@ -8,9 +8,6 @@
 #define CIRCLE_RADIUS 10
 #define LINE_WIDTH 1
 
-#define IMAGE_WIDTH 300
-#define IMAGE_HEIGHT 300
-
 cairo_t* create_cr()  {
 	cairo_surface_t* surface;
 	cairo_t* cr;
