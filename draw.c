@@ -8,6 +8,8 @@
 #define CIRCLE_RADIUS 10
 #define LINE_WIDTH 1
 
+#include "sigilize.h"
+
 cairo_t* create_cr()  {
 	cairo_surface_t* surface;
 	cairo_t* cr;
@@ -34,6 +36,7 @@ void construct_shape(cairo_t *cr, shapedef_t shape) {
 					shape.points[0].y,
 					CIRCLE_RADIUS,
 					0, 2*M_PI);
+			shape.points++;
 			shape.numpoints--;
 		} else if(shape.numpoints == 2) {
 			cairo_line_to(cr,
@@ -42,6 +45,7 @@ void construct_shape(cairo_t *cr, shapedef_t shape) {
 			cairo_line_to(cr,
 					shape.points[1].x,
 					shape.points[1].y);
+			shape.points++;
 			shape.numpoints--;	// include circle at the end
 		} else {
 			cairo_curve_to(cr,
@@ -51,6 +55,7 @@ void construct_shape(cairo_t *cr, shapedef_t shape) {
 					shape.points[1].y,
 					shape.points[2].x,
 					shape.points[2].y);
+			shape.points += 3;
 			shape.numpoints -= 3;
 		}
 	}

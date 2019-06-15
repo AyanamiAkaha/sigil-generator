@@ -28,7 +28,7 @@ hsv_t get_color(bitbuffer_t* bitbuffer) {
 	hsv_t hsv;
 	hsv.s = SATURATION;
 	hsv.v = VALUE;
-	hsv.h = ((float)(bitbuffer->bits & 0xff)) / 256 * 360;
+	hsv.h = (float)((unsigned char)(bitbuffer->bits & 0xff)) / 256 * 360;
 	bitbuffer->bits >>= 8;
 	bitbuffer->nbits -=8;
 	return hsv;
@@ -43,10 +43,10 @@ unsigned char numpoints(bitbuffer_t* bitbuffer) {
 
 point_t get_point(context_t* ctx) {
 	point_t p;
-	p.x = (ctx->bitbuffer.bits & 0xf) * (float)IMAGE_WIDTH / 16;
+	p.x = (unsigned char)(ctx->bitbuffer.bits & 0xf) * (float)(IMAGE_WIDTH-10) / 16;
 	ctx->bitbuffer.bits >>= 4;
 	ctx->bitbuffer.nbits -= 4;
-	p.y = (ctx->bitbuffer.bits & 0xf) * (float)IMAGE_HEIGHT / 16;
+	p.y = (unsigned char)(ctx->bitbuffer.bits & 0xf) * (float)(IMAGE_HEIGHT-10) / 16;
 	ctx->bitbuffer.bits >>= 4;
 	ctx->bitbuffer.nbits -= 4;
 	return p;

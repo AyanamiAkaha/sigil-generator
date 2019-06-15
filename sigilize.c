@@ -109,7 +109,13 @@ void write_sigil(params_t params) {
 	sigil_t* sigil = (sigil_t*)params.sigil_data;
 	cairo_t* cr = create_cr();
 	int i;
+	debug("shapes: %d\n", sigil->nshapes);
 	for(i=0; i<sigil->nshapes; i++) {
+		debug("drawing shape: c=%f n=%d\n", sigil->shapes[i].color.h, sigil->shapes[i].numpoints);
+		int d;
+		for(d=0; d < sigil->shapes[i].numpoints; d++) {
+			debug("[%d,%d] (%f, %f)\n", i, d, sigil->shapes[i].points[d].x, sigil->shapes[i].points[d].y);
+		}
 		draw_shape(cr, sigil->shapes[i]);
 	}
 	cairo_surface_write_to_png(cairo_get_target(cr), params.fn_out);
