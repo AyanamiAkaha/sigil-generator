@@ -101,3 +101,15 @@ sigil_t process_intent(char const * intent) {
 	}
 	return sigil;
 }
+
+void free_sigil(sigil_t* sigil) {
+	int i;
+	for(i=0; i<sigil->nshapes; i++) {
+		free(sigil->shapes[i].points);
+		sigil->shapes[i].numpoints = 0;
+		sigil->shapes[i].points = NULL;
+	}
+	free(sigil->shapes);
+	sigil->nshapes = 0;
+	sigil->shapes = NULL;
+}

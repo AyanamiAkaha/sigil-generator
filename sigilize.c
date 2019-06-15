@@ -121,9 +121,18 @@ void write_sigil(params_t params) {
 	cairo_surface_write_to_png(cairo_get_target(cr), params.fn_out);
 }
 
+void free_params(params_t* params) {
+	free(params->intent);
+	params->intent = NULL;
+	free_sigil((sigil_t*)params->sigil_data);
+	free(params->sigil_data);
+	params->sigil_data = NULL;
+}
+
 int main(int argc, char **argv) {
 	progname = argv[0];
 	params_t params = parse_args(argc, argv);
 	params = encode_intent(params);
 	write_sigil(params);
+	free_params(&params);
 }

@@ -9,5 +9,6 @@ typedef struct {
 } sigil_t;
 
 sigil_t process_intent(char const *);
+void free_sigil(sigil_t*);
 
 #endif
